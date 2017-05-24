@@ -1,4 +1,4 @@
-#**Behavioral Cloning** 
+# **Behavioral Cloning** 
 
 During this project I trained a deep convolutional neural network to imitate the steering angles of a human driver, around multiple simulated laps of a circuit.
 
