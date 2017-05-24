@@ -22,11 +22,27 @@ I recorded my driving whilst doing a full lap of the circuit. As the course was 
 The code for training is included in ``model.py``. The lessons suggest that if you are running out of RAM whilst processing the training data, a generator should be used which reads each batch preprocesses it and feeds it into the network before opening the next batch of images. This was not necessary in my case, more data was not required and my machine had sufficient RAM for the data used.
 
 ### The Network
-- normalisation
-- dropout
-- elu/relu
-- image input size
-- adam optimizer (why that means you didn't set the learning rate)
+
+To start with I experimented with experimented with various network architectures by adding different sized fully connected layers, the performance improved as I added more layers, but the number of parameters and so the size of the resulting model grew out of control quickly. I then added some convolutional layers instead, this allowed the network to learn about patches of the images rather than individual pixels. I finally settled on the network shown in the [Nvidia End-to-End learning paper](https://arxiv.org/pdf/1604.07316v1.pdf), with added relu activation stages to introduce nonlinearity and a dropout stage to reduce overfitting. Below is the full architecture.
+
+1. Input image size was 85x320x3
+2. Lambda layer for normalising the image to be floats centered around 0.
+3. A cropping layer to remove the top 50 pixels (sky) and bottom 25 pixels (bonnet/hood).
+4. Convolution layer with kernel size of 5x5 and stride 2x2 and depth 24
+5. Relu activation
+6. Convolution layer with kernel size of 5x5 and stride 2x2 and depth 36
+7. Convolution layer with kernel size of 3x3 and stride 1x1 and depth 48
+8. Relu activation
+9. Convolution layer with kernel size of 3x3 and stride 1x1 and depth 64
+10. 10% dropout
+11. Fully connected layer with 100 nodes
+12. Fully connected layer with 50 nodes
+13. Fully connected layer with 10 nodes
+14. Fully connected layer with 1 node which predicts the steering angle.
+
+I tried altering the shape of the input image to be the same as in the Nvidia paper (66x200), but it didn't show much improvement in using the standard sized image after cropping (85x320).
+
+I did not need to set the learning rate as the Adam optimiser was used, which uses an adaptive learning rate, starting with a large one and exponentially reducing as the epochs progress.
 
 ### Data Handling
 
@@ -58,12 +74,13 @@ A large proportion of each image produced by the simulator is either sky or the 
 To create more training data the images were also flipped, and the training data multiplied by -1. 
 
 ## Further work
-- generator
-- train for less epochs
-- try using elu instead of relu
-- collect data using a steering wheel instead of a controller
-- calculating the correction factor for left/right camera
-- train exclusively on the second track to show it is generalising to the first track
+
+- Further investigate using elu instead of relu: I briefly tried this but it made my car swerve quite violently from side to side, further investigation may have made it successful.
+- For most training runs I only used 7 epochs as this minimised the error well, on the final run I used 20 epochs, this didn't improve the loss, so I would not do this again.
+- Make more accuracte calculations for the correction factor for the left and right cameras.
+- Train exclusively on the second track to see how well the model generalises to the main project track.
 
 
-*examples of images from the dataset must be included.*
+https://github.com/martonistvan/CarND-Behavioral-Cloning-P3/blob/master/WriteUp.pdf
+- shuffling
+- train/test/split
