@@ -65,6 +65,10 @@ The steering angle recorded for the sets of center, left and right images all ha
 
 The left and right camera images are very useful in training as they give a continuous example of what angle to use when facing offcenter from the intended direction of travel. However, as with the center images if I used the whole dataset it would have highly overrepresented steering angles as 0.2 and -0.2, so the left and right steering angles were processed after the dataset balancing step.
 
+## Training
+
+The dataset was split into training and validation sets during the training process to reduce overfitting and to ensure that the model was likely to generalise well. 5 epochs was generally sufficient to reach a minimum validation loss, after that the loss didn't decrease even whilst using a dynamic learning rate. Before training the data was shuffled so that continous blocks of images were not all in the same train/validation sets during cross validation.
+
 #### Cropping and flipping the images
 
 A large proportion of each image produced by the simulator is either sky or the bonnet of the car. To handle this, this isn't useful when training the network, and so the images are cropped by Keras before training.
@@ -79,8 +83,3 @@ To create more training data the images were also flipped, and the training data
 - For most training runs I only used 7 epochs as this minimised the error well, on the final run I used 20 epochs, this didn't improve the loss, so I would not do this again.
 - Make more accuracte calculations for the correction factor for the left and right cameras.
 - Train exclusively on the second track to see how well the model generalises to the main project track.
-
-
-https://github.com/martonistvan/CarND-Behavioral-Cloning-P3/blob/master/WriteUp.pdf
-- shuffling
-- train/test/split
